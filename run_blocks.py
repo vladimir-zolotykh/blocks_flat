@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
+from typing import TextIO, Generator
 import io
 import re
 
@@ -15,7 +16,21 @@ minion_blk = """\
 """
 
 
+class Block:
+    def __init__(self, line: str, line_no: int):
+        self._line = line.rstrip()
+        self._line_no = line_no
+
+    def __repr__(self):
+        return (f"{self._line_no}: {self._line}")
+
+
+def next_block(sh: TextIO) -> Generator[Block, None, None]:
+    for line_no, line in enumerate(sh, 1):
+        yield Block(line, line_no)
+
+
 if __name__ == '__main__':
     with io.StringIO(minion_blk) as sh:
-        for line_no, line in enumerate(sh, 1):
-            print(f"{line_no = }, {line = }")
+        for block in next_block(sh):
+            print(f"{block = }")
