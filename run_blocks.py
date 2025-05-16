@@ -6,7 +6,7 @@ import io
 import re
 
 BLOCK_RE = r"\[(?P<body>[^]]*)\]"
-BODY_RE = r"(?P<color>[^:]+):\s*(?P<text>\w+)"
+BODY_RE = r"(?:(?P<color>[^:]+):\s*)?(?P<text>\w+)"
 SEPARATOR_RE = r"^/{1,2}$"
 
 minion_blk = """\
@@ -25,7 +25,8 @@ class Block:
         self.line_no = line_no
 
     def __repr__(self):
-        return (f"{self.color}: {self.text}")
+        s: str = f"{self.color}: " if self.color else ""
+        return s + f"{self.text}"
 
 
 def next_block(sh: TextIO) -> Generator[Block, None, None]:
