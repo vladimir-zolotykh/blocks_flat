@@ -19,18 +19,21 @@ minion_blk = """\
 
 
 class Token:
-    def __init__(self, line_no: int = -1):
+    def __init__(self, row: int, column: int, line_no: int):
+        self.row = row
+        self.column = column
         self.line_no = line_no
 
 
 class Separator(Token):
     def __repr__(self):
-        return f"Separator(line_no={self.line_no})"
+        return (f"Separator(row={self.row}, column={self.column}, "
+                f"line_no={self.line_no})")
 
 
 class Block(Token):
-    def __init__(self, color: str, text: str, line_no: int = -1):
-        super().__init__(line_no=line_no)
+    def __init__(self, color: str, text: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.color = color
         self.text = text
 
@@ -38,20 +41,25 @@ class Block(Token):
         # s: str = f"{self.color}: " if self.color else ""
         # return s + f"{self.text}"
         return (f"Block(color={self.color}, text={self.text!r}, "
+                f"row={self.row}, column={self.column}, "
                 f"line_no={self.line_no})")
 
 
-def next_block(sh: TextIO) -> Generator[Block, None, None]:
+def next_block(sh: TextIO) -> Generator[Token, None, None]:
+    row: int = 1
+    column: int = 1
     for line_no, line in enumerate(sh, 1):
         sep = re.match(SEPARATOR_RE, line)
         if sep:
-            yield Separator(line_no)
+            yield Separator(row, column, line_no)
         for blk in re.finditer(BLOCK_RE, line):
             blk_text = blk.group('body')
             body = re.match(BODY_RE, blk_text)
             if body:
                 color, text = body.groups()
-                yield Block(color, text, line_no=line_no)
+                yield Block(color, text, row, column, line_no)
+                column += 1
+        row += 1
 
 
 if __name__ == '__main__':
