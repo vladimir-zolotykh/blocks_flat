@@ -46,9 +46,9 @@ class Block(Token):
 
 
 def next_block(sh: TextIO) -> Generator[Token, None, None]:
-    row: int = 1
-    column: int = 1
+    row: int = 0
     for line_no, line in enumerate(sh, 1):
+        column: int = 0
         sep = re.match(SEPARATOR_RE, line)
         if sep:
             yield Separator(row, column, line_no)
