@@ -79,12 +79,11 @@ def next_block(sh: TextIO) -> Generator[Node, None, None]:
         row += 1
 
 
-if __name__ == "__main__":
+def make_chart(input_str: str) -> Chart:
     with io.StringIO(minion_blk) as sh:
         chart: Chart = Chart()
         row_cur: int = 0
         row: Row = Row(row_cur)
-        column: int = 0
         chart.add_row(row)
         for block in next_block(sh):
             if block.row == row.row:
@@ -94,4 +93,9 @@ if __name__ == "__main__":
                 row = Row(row_cur)
                 chart.append(row)
                 row.append(block)
+        return chart
+
+
+if __name__ == "__main__":
+    chart: Chart = make_chart(minion_blk)
     print(chart)
