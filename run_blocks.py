@@ -5,11 +5,14 @@
 >>> chart = make_chart(minion_blk)
 >>> import pprint
 >>> pprint.pprint(chart)
-[[Block(color=lightblue, text='Director', row=0, column=0, line_no=1)],
+[[Empty(row=0, column=0, line_no=1),
+  Block(color=lightblue, text='Director', row=0, column=0, line_no=1)],
  [Separator(row=1, column=0, line_no=2)],
- [Block(color=lightgreen, text='Secretary', row=2, column=0, line_no=3)],
+ [Empty(row=2, column=0, line_no=3),
+  Block(color=lightgreen, text='Secretary', row=2, column=0, line_no=3)],
  [Separator(row=3, column=0, line_no=4)],
  [Block(color=None, text='Minion', row=4, column=0, line_no=5),
+  Empty(row=4, column=1, line_no=5),
   Block(color=None, text='Minion', row=4, column=1, line_no=5)]]
 """
 
@@ -58,6 +61,16 @@ class Separator(Node):
         )
 
 
+class Empty(Node):
+    def __repr__(self):
+        # fmt: off
+        return (
+            f"Empty(row={self.row}, column={self.column}, "
+            f"line_no={self.line_no})"
+        )
+        # fmt: on
+
+
 class Block(Node):
     def __init__(self, color: str, text: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -88,6 +101,8 @@ def next_block(sh: TextIO) -> Generator[Node, None, None]:
                 color, text = body.groups()
                 yield Block(color, text, row, column, line_no)
                 column += 1
+            else:
+                yield Empty(row, column, line_no)
         row += 1
 
 
