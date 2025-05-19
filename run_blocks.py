@@ -25,6 +25,19 @@ class Node:
         self.line_no = line_no
 
 
+class Row(list[Node]):
+    def __init__(self, row: int) -> None:
+        self.row = row
+
+    def add_node(self, node: Node) -> None:
+        self.append(node)
+
+
+class Chart(list[Row]):
+    def add_row(self, row: Row) -> None:
+        self.append(row)
+
+
 class Separator(Node):
     def __repr__(self):
         return (
@@ -68,5 +81,17 @@ def next_block(sh: TextIO) -> Generator[Node, None, None]:
 
 if __name__ == "__main__":
     with io.StringIO(minion_blk) as sh:
+        chart: Chart = Chart()
+        row_cur: int = 0
+        row: Row = Row(row_cur)
+        column: int = 0
+        chart.add_row(row)
         for block in next_block(sh):
-            print(f"{block = }")
+            if block.row == row.row:
+                row.append(block)
+            else:
+                row_cur += 1
+                row = Row(row_cur)
+                chart.append(row)
+                row.append(block)
+    print(chart)
