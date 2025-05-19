@@ -3,8 +3,14 @@
 # PYTHON_ARGCOMPLETE_OK
 """
 >>> chart = make_chart(minion_blk)
->>> print(chart)
-[[Block(color=lightblue, text='Director', row=0, column=0, line_no=1)], [Separator(row=1, column=0, line_no=2)], [Block(color=lightgreen, text='Secretary', row=2, column=0, line_no=3)], [Separator(row=3, column=0, line_no=4)], [Block(color=None, text='Minion', row=4, column=0, line_no=5), Block(color=None, text='Minion', row=4, column=1, line_no=5)]]
+>>> import pprint
+>>> pprint.pprint(chart)
+[[Block(color=lightblue, text='Director', row=0, column=0, line_no=1)],
+ [Separator(row=1, column=0, line_no=2)],
+ [Block(color=lightgreen, text='Secretary', row=2, column=0, line_no=3)],
+ [Separator(row=3, column=0, line_no=4)],
+ [Block(color=None, text='Minion', row=4, column=0, line_no=5),
+  Block(color=None, text='Minion', row=4, column=1, line_no=5)]]
 """
 
 from typing import TextIO, Generator
