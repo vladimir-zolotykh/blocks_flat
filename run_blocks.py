@@ -81,13 +81,11 @@ def build_tree(sh: TextIO) -> Chart:
         for line_no, line in enumerate(sh, 1):
             row: Row = Row(row_cur)
             chart.add_row(row)
-            sep = re.match(SEPARATOR_RE, line)
-            if sep:
+            if re.match(SEPARATOR_RE, line):
                 row.add_node(Separator(line_no))
             else:
                 for blk in re.finditer(BLOCK_RE, line):
-                    body = re.match(BODY_RE, blk.group("body"))
-                    if body:
+                    if body := re.match(BODY_RE, blk.group("body")):
                         row.add_node(Block(*body.groups(), line_no))
                     else:
                         row.add_node(Empty(line_no))
