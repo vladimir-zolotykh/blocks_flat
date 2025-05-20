@@ -51,12 +51,12 @@ class Chart(list[Row]):
 
 class Separator(Node):
     def __repr__(self):
-        return f"Separator(line_no={self.line_no})"
+        return f"{self.__class__.__name__}(line_no={self.line_no})"
 
 
 class Empty(Node):
     def __repr__(self):
-        return f"Empty(line_no={self.line_no})"
+        return f"{self.__class__.__name__}(line_no={self.line_no})"
 
 
 class Block(Node):
@@ -68,7 +68,7 @@ class Block(Node):
     def __repr__(self):
         # fmt: off
         return (
-            f"Block(color={self.color}, text={self.text!r}, "
+            f"{self.__class__.__name__}(color={self.color}, text={self.text!r}, "
             f"line_no={self.line_no})"
         )
         # fmt: on
