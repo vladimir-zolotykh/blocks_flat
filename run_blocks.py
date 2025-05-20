@@ -68,8 +68,8 @@ class Block(Node):
     def __repr__(self):
         # fmt: off
         return (
-            f"{self.__class__.__name__}(color={self.color}, text={self.text!r}, "
-            f"line_no={self.line_no})"
+            f"{self.__class__.__name__}(color={self.color}, "
+            f"text={self.text!r}, line_no={self.line_no})"
         )
         # fmt: on
 
