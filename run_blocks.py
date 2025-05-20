@@ -2,18 +2,16 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 """
->>> chart = make_chart(minion_blk)
+>>> chart = build_tree(minion_blk)
 >>> import pprint
 >>> pprint.pprint(chart)
-[[Empty(row=0, column=0, line_no=1),
-  Block(color=lightblue, text='Director', row=0, column=0, line_no=1)],
- [Separator(row=1, column=0, line_no=2)],
- [Empty(row=2, column=0, line_no=3),
-  Block(color=lightgreen, text='Secretary', row=2, column=0, line_no=3)],
- [Separator(row=3, column=0, line_no=4)],
- [Block(color=None, text='Minion', row=4, column=0, line_no=5),
-  Empty(row=4, column=1, line_no=5),
-  Block(color=None, text='Minion', row=4, column=1, line_no=5)]]
+[[Empty(line_no=1), Block(color=lightblue, text='Director', line_no=1)],
+ [Separator(line_no=2)],
+ [Empty(line_no=3), Block(color=lightgreen, text='Secretary', line_no=3)],
+ [Separator(line_no=4)],
+ [Block(color=None, text='Minion', line_no=5),
+  Empty(line_no=5),
+  Block(color=None, text='Minion', line_no=5)]]
 """
 
 from typing import TextIO
@@ -100,9 +98,6 @@ def build_tree(sh: TextIO) -> Chart:
 
 
 if __name__ == "__main__":
-    # import doctest
+    import doctest
 
-    # doctest.testmod()
-    import pprint
-
-    pprint.pprint(build_tree(minion_blk))
+    doctest.testmod()
