@@ -16,7 +16,7 @@
   Block(color=None, text='Minion', row=4, column=1, line_no=5)]]
 """
 
-from typing import TextIO, Generator
+from typing import TextIO
 import io
 import re
 
@@ -34,9 +34,7 @@ minion_blk = """\
 
 
 class Node:
-    def __init__(self, row: int, column: int, line_no: int):
-        self.row = row
-        self.column = column
+    def __init__(self, line_no: int) -> None:
         self.line_no = line_no
 
 
@@ -55,20 +53,12 @@ class Chart(list[Row]):
 
 class Separator(Node):
     def __repr__(self):
-        return (
-            f"Separator(row={self.row}, column={self.column}, "
-            f"line_no={self.line_no})"
-        )
+        return f"Separator(line_no={self.line_no})"
 
 
 class Empty(Node):
     def __repr__(self):
-        # fmt: off
-        return (
-            f"Empty(row={self.row}, column={self.column}, "
-            f"line_no={self.line_no})"
-        )
-        # fmt: on
+        return f"Empty(line_no={self.line_no})"
 
 
 class Block(Node):
@@ -78,52 +68,41 @@ class Block(Node):
         self.text = text
 
     def __repr__(self):
-        # s: str = f"{self.color}: " if self.color else ""
-        # return s + f"{self.text}"
+        # fmt: off
         return (
             f"Block(color={self.color}, text={self.text!r}, "
-            f"row={self.row}, column={self.column}, "
             f"line_no={self.line_no})"
         )
+        # fmt: on
 
 
-def next_block(sh: TextIO) -> Generator[Node, None, None]:
-    row: int = 0
-    for line_no, line in enumerate(sh, 1):
-        column: int = 0
-        sep = re.match(SEPARATOR_RE, line)
-        if sep:
-            yield Separator(row, column, line_no)
-        for blk in re.finditer(BLOCK_RE, line):
-            blk_text = blk.group("body")
-            body = re.match(BODY_RE, blk_text)
-            if body:
-                color, text = body.groups()
-                yield Block(color, text, row, column, line_no)
-                column += 1
-            else:
-                yield Empty(row, column, line_no)
-        row += 1
-
-
-def make_chart(input_str: str) -> Chart:
+def build_tree(sh: TextIO) -> Chart:
+    chart: Chart = Chart()
+    row_cur: int = 0
     with io.StringIO(minion_blk) as sh:
-        chart: Chart = Chart()
-        row_cur: int = 0
-        row: Row = Row(row_cur)
-        chart.add_row(row)
-        for block in next_block(sh):
-            if block.row == row.row:
-                row.append(block)
+        for line_no, line in enumerate(sh, 1):
+            row: Row = Row(row_cur)
+            chart.add_row(row)
+            sep = re.match(SEPARATOR_RE, line)
+            if sep:
+                row.add_node(Separator(line_no))
             else:
-                row_cur += 1
-                row = Row(row_cur)
-                chart.append(row)
-                row.append(block)
-        return chart
+                for blk in re.finditer(BLOCK_RE, line):
+                    blk_text = blk.group("body")
+                    body = re.match(BODY_RE, blk_text)
+                    if body:
+                        color, text = body.groups()
+                        row.add_node(Block(color, text, line_no))
+                    else:
+                        row.add_node(Empty(line_no))
+            row_cur += 1
+    return chart
 
 
 if __name__ == "__main__":
-    import doctest
+    # import doctest
 
-    doctest.testmod()
+    # doctest.testmod()
+    import pprint
+
+    pprint.pprint(build_tree(minion_blk))
