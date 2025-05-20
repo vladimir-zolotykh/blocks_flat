@@ -86,11 +86,9 @@ def build_tree(sh: TextIO) -> Chart:
                 row.add_node(Separator(line_no))
             else:
                 for blk in re.finditer(BLOCK_RE, line):
-                    blk_text = blk.group("body")
-                    body = re.match(BODY_RE, blk_text)
+                    body = re.match(BODY_RE, blk.group("body"))
                     if body:
-                        color, text = body.groups()
-                        row.add_node(Block(color, text, line_no))
+                        row.add_node(Block(*body.groups(), line_no))
                     else:
                         row.add_node(Empty(line_no))
             row_cur += 1
