@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 import block as BLK
 
 
-def build_xml_tree(chart: BLK.Chart, svg) -> ET.Element:
+def build_xml_tree(chart: BLK.Chart) -> ET.Element:
     svg = ET.Element(
         "svg",
         {
@@ -34,9 +34,10 @@ def build_xml_tree(chart: BLK.Chart, svg) -> ET.Element:
         for col_index, node in enumerate(row):
             x = col_index * x_spacing
             y = y_offset + row_index * (rect_height + 10)
-
-            fill = node.color if node.color else "None"
-            text = node.text
+            if isinstance(node, BLK.Block):
+                fill, text = node.color, node.text
+            else:
+                fill, text = None, ""
             ET.SubElement(
                 svg,
                 "rect",
@@ -59,5 +60,4 @@ def build_xml_tree(chart: BLK.Chart, svg) -> ET.Element:
                     "font-size": str(font_size),
                 },
             ).text = text
-
     return svg
