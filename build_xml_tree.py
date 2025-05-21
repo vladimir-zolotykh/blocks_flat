@@ -35,8 +35,7 @@ def build_xml_tree(chart: BLK.Chart) -> ET.Element:
             x = col_index * x_spacing
             y = y_offset + row_index * (rect_height + 10)
             if isinstance(node, BLK.Block):
-                fill = node.color if node.color else "None"
-                text = node.text
+                fill, text = node.color, node.text
             else:
                 fill, text = "None", ""
             ET.SubElement(
