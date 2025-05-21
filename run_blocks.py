@@ -22,7 +22,7 @@ from build_xml_tree import build_xml_tree
 import block as BLK
 
 BLOCK_RE = r"\[(?P<body>[^]]*)\]"
-BODY_RE = r"(?:(?P<color>[^:]+):\s*)?(?P<text>\w+)"
+BODY_RE = r"(?:(?P<color>[^:]+):\s*)?(?P<text>[^]]+)"
 SEPARATOR_RE = r"^/{1,2}$"
 
 minion_blk = """\
@@ -46,7 +46,9 @@ def build_tree(sh: TextIO) -> BLK.Chart:
             else:
                 for blk in re.finditer(BLOCK_RE, line):
                     if body := re.match(BODY_RE, blk.group("body")):
-                        row.add_node(BLK.Block(*body.groups(), line_no))
+                        color, text = body.groups()
+                        color = color if color else "None"
+                        row.add_node(BLK.Block(color, text, line_no))
                     else:
                         row.add_node(BLK.Empty(line_no))
             row_cur += 1
