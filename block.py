@@ -26,11 +26,6 @@ class Separator(Node):
         return f"{self.__class__.__name__}(line_no={self.line_no})"
 
 
-class Empty(Node):
-    def __repr__(self):
-        return f"{self.__class__.__name__}(line_no={self.line_no})"
-
-
 class Block(Node):
     def __init__(self, color: str, text: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
