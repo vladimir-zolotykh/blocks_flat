@@ -48,9 +48,9 @@ def build_tree(sh: TextIO) -> BLK.Chart:
                     if body := re.match(BODY_RE, blk.group("body")):
                         color, text = body.groups()
                         color = color if color else "None"
-                        row.add_node(BLK.Block(color, text, line_no))
                     else:
-                        row.add_node(BLK.Empty(line_no))
+                        color, text = "None", ""
+                    row.add_node(BLK.Block(color, text, line_no))
             row_cur += 1
     return chart
 
