@@ -30,31 +30,32 @@ def build_xml_tree(chart: BLK.Chart) -> ET.Element:
         if isinstance(row[0], BLK.Separator):
             continue
         for col_index, node in enumerate(row):
+            if node.is_empty:
+                continue
             x: int = col_index * x_spacing
             assert isinstance(node, BLK.Block), f"{node}: Block expected"
             fill, text = node.color, node.text
             fill = fill if fill else "None"
-            if text != "":
-                ET.SubElement(
-                    svg,
-                    "rect",
-                    {
-                        "x": str(x),
-                        "y": str(y),
-                        "width": str(rect_width),
-                        "height": str(rect_height),
-                        "fill": fill,
-                        "stroke": "black",
-                    },
-                )
-                ET.SubElement(
-                    svg,
-                    "text",
-                    {
-                        "x": str(x + rect_width // 2),
-                        "y": str(y + rect_height - 3),
-                        "text-anchor": "middle",
-                        "font-size": str(font_size),
-                    },
-                ).text = text
+            ET.SubElement(
+                svg,
+                "rect",
+                {
+                    "x": str(x),
+                    "y": str(y),
+                    "width": str(rect_width),
+                    "height": str(rect_height),
+                    "fill": fill,
+                    "stroke": "black",
+                },
+            )
+            ET.SubElement(
+                svg,
+                "text",
+                {
+                    "x": str(x + rect_width // 2),
+                    "y": str(y + rect_height - 3),
+                    "text-anchor": "middle",
+                    "font-size": str(font_size),
+                },
+            ).text = text
     return svg
