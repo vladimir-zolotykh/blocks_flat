@@ -58,4 +58,5 @@ def build_xml_tree(chart: BLK.Chart) -> ET.Element:
                     "font-size": str(font_size),
                 },
             ).text = text
+    svg.set("viewBox", f"0 0 {x + rect_width} {y + rect_height}")
     return svg
