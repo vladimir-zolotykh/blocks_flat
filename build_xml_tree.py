@@ -21,43 +21,40 @@ def build_xml_tree(chart: BLK.Chart) -> ET.Element:
     rect_height = 10
     font_size = 5
     x_spacing = 36
-    # y_spacing = 20
-    # x_offset = 0
     y_offset = 10
 
     row: BLK.Row
-    y: int = 0
-
     for row_index, row in enumerate(chart):
-        x: int = 0
         node: BLK.Node
+        y: int = y_offset + row_index * rect_height
+        if isinstance(row[0], BLK.Separator):
+            continue
         for col_index, node in enumerate(row):
-            x = col_index * x_spacing
-            y = y_offset + row_index * (rect_height + 10)
-            if isinstance(node, BLK.Block):
-                fill, text = node.color, node.text
-            else:
-                fill, text = "None", ""
-            ET.SubElement(
-                svg,
-                "rect",
-                {
-                    "x": str(x),
-                    "y": str(y),
-                    "width": str(rect_width),
-                    "height": str(rect_height),
-                    "fill": fill,
-                    "stroke": "black",
-                },
-            )
-            ET.SubElement(
-                svg,
-                "text",
-                {
-                    "x": str(x + rect_width // 2),
-                    "y": str(y + rect_height - 3),
-                    "text-anchor": "middle",
-                    "font-size": str(font_size),
-                },
-            ).text = text
+            x: int = col_index * x_spacing
+            assert isinstance(node, BLK.Block), f"{node}: Block expected"
+            fill, text = node.color, node.text
+            fill = fill if fill else "None"
+            if text != "":
+                ET.SubElement(
+                    svg,
+                    "rect",
+                    {
+                        "x": str(x),
+                        "y": str(y),
+                        "width": str(rect_width),
+                        "height": str(rect_height),
+                        "fill": fill,
+                        "stroke": "black",
+                    },
+                )
+                ET.SubElement(
+                    svg,
+                    "text",
+                    {
+                        "x": str(x + rect_width // 2),
+                        "y": str(y + rect_height - 3),
+                        "text-anchor": "middle",
+                        "font-size": str(font_size),
+                    },
+                ).text = text
     return svg
