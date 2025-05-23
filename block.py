@@ -4,6 +4,8 @@
 
 
 class Node:
+    abbreviated = True
+
     def __init__(self, line_no: int) -> None:
         self.line_no = line_no
 
@@ -23,6 +25,8 @@ class Chart(list[Row]):
 
 class Separator(Node):
     def __repr__(self):
+        if self.abbreviated:
+            return f"{self.__class__.__name__}()"
         return f"{self.__class__.__name__}(line_no={self.line_no})"
 
 
@@ -32,7 +36,15 @@ class Block(Node):
         self.color = color
         self.text = text
 
+    @property
+    def is_empty(self):
+        return self.color == "None" and self.text == ""
+
     def __repr__(self):
+        if self.is_empty:
+            return f"{self.__class__.__name__}()"
+        if self.abbreviated:
+            return f"{self.__class__.__name__}({self.color}, {self.text!r})"
         # fmt: off
         return (
             f"{self.__class__.__name__}(color={self.color}, "
