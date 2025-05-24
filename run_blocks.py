@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 """
->>> chart = build_tree(minion_blk)
+>>> chart = make_chart(minion_blk)
 >>> import pprint
 >>> pprint.pprint(chart)
 [[Empty(line_no=1), Block(color=lightblue, text='Director', line_no=1)],
@@ -33,25 +33,36 @@ minion_blk = """\
 [Minion #1] [] [Minion #2]
 """
 
+message_box_blk = """
+[#00CCDE: MessageBox Window
+    [lightgray: Frame
+        [] [white: Message text]
+        //
+        [goldenrod: OK Button] [] [#ff0505: Cancel Button]
+        /
+        []
+    ]
+]
+"""
 
-def build_tree(sh: TextIO) -> BLK.Chart:
+
+def make_chart(fh: TextIO) -> BLK.Chart:
     chart: BLK.Chart = BLK.Chart()
     row_cur: int = 0
-    with io.StringIO(minion_blk) as sh:
-        for line_no, line in enumerate(sh, 1):
-            row: BLK.Row = BLK.Row(row_cur)
-            chart.add_row(row)
-            if re.match(SEPARATOR_RE, line):
-                row.add_node(BLK.Separator(line_no))
-            else:
-                for blk in re.finditer(BLOCK_RE, line):
-                    if body := re.match(BODY_RE, blk.group("body")):
-                        color, text = body.groups()
-                        color = color if color else "None"
-                    else:
-                        color, text = "None", ""
-                    row.add_node(BLK.Block(color, text, line_no))
-            row_cur += 1
+    for line_no, line in enumerate(fh, 1):
+        row: BLK.Row = BLK.Row(row_cur)
+        chart.add_row(row)
+        if re.match(SEPARATOR_RE, line):
+            row.add_node(BLK.Separator(line_no))
+        else:
+            for blk in re.finditer(BLOCK_RE, line):
+                if body := re.match(BODY_RE, blk.group("body")):
+                    color, text = body.groups()
+                    color = color if color else "None"
+                else:
+                    color, text = "None", ""
+                row.add_node(BLK.Block(color, text, line_no))
+        row_cur += 1
     return chart
 
 
@@ -59,10 +70,17 @@ if __name__ == "__main__":
     # import doctest
 
     # doctest.testmod()
-    chart: BLK.Chart = build_tree(minion_blk)
+    with io.StringIO(message_box_blk) as fh:
+        # chart: BLK.Chart = make_chart(fh)
+        chart: BLK.Chart = make_chart(fh)
+    import pprint
+
+    pprint.pprint(chart)
+    exit(0)
     svg: ET.Element = build_xml_tree(chart)
     tree = ET.ElementTree(svg)
-    filename: str = "run_blocks.svg"
+    # filename: str = "run_blocks.svg"
+    filename: str = "message_box.svg"
     with open(filename, "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n')
         f.write('<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"\n')
