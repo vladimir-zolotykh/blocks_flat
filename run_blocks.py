@@ -17,6 +17,8 @@
 from typing import TextIO
 import io
 import re
+import argparse
+import argcomplete
 import xml.etree.ElementTree as ET
 from build_xml_tree import build_xml_tree
 import block as BLK
@@ -27,6 +29,14 @@ SEPARATOR_RE = r"^/{1,2}$"
 
 minion_blk = """\
 [] [lightblue: Director]
+//
+[] [lightgreen: Secretary]
+//
+[Minion #1] [] [Minion #2]
+"""
+
+minion_blk_experimental = """\
+[] [#00CCDE: Director]
 //
 [] [lightgreen: Secretary]
 //
@@ -66,17 +76,28 @@ def make_chart(fh: TextIO) -> BLK.Chart:
     return chart
 
 
-if __name__ == "__main__":
-    # import doctest
+parser = argparse.ArgumentParser(
+    description="Parse .blk file",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
 
-    # doctest.testmod()
-    with io.StringIO(message_box_blk) as fh:
+parser.add_argument(
+    "blk_input",
+    choices=["minion_blk", "minion_blk_experimental", "message_box_blk"],
+    help="Select .blk input to parse",
+)
+
+if __name__ == "__main__":
+    argcomplete.autocomplete(parser)
+    args = parser.parse_args()
+
+    with io.StringIO(globals()[args.blk_input]) as fh:
         # chart: BLK.Chart = make_chart(fh)
         chart: BLK.Chart = make_chart(fh)
     import pprint
 
     pprint.pprint(chart)
-    exit(0)
+    # exit(0)
     svg: ET.Element = build_xml_tree(chart)
     tree = ET.ElementTree(svg)
     # filename: str = "run_blocks.svg"
