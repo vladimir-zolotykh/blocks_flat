@@ -22,38 +22,11 @@ import argcomplete
 import xml.etree.ElementTree as ET
 from build_xml_tree import build_xml_tree
 import block as BLK
+import blk_input
 
 BLOCK_RE = r"\[(?P<body>[^]]*)\]"
 BODY_RE = r"(?:(?P<color>[^:]+):\s*)?(?P<text>[^]]+)"
 SEPARATOR_RE = r"^/{1,2}$"
-
-minion_blk = """\
-[] [lightblue: Director]
-//
-[] [lightgreen: Secretary]
-//
-[Minion #1] [] [Minion #2]
-"""
-
-minion_blk_experimental = """\
-[] [#00CCDE: Director]
-//
-[] [lightgreen: Secretary]
-//
-[Minion #1] [] [Minion #2]
-"""
-
-message_box_blk = """
-[#00CCDE: MessageBox Window
-    [lightgray: Frame
-        [] [white: Message text]
-        //
-        [goldenrod: OK Button] [] [#ff0505: Cancel Button]
-        /
-        []
-    ]
-]
-"""
 
 
 def make_chart(fh: TextIO) -> BLK.Chart:
@@ -82,8 +55,8 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument(
-    "blk_input",
-    choices=["minion_blk", "minion_blk_experimental", "message_box_blk"],
+    "blk_str",
+    choices=[n for n in dir(blk_input) if not n.startswith("__")],
     help="Select .blk input to parse",
 )
 
@@ -91,23 +64,13 @@ if __name__ == "__main__":
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
 
-    with io.StringIO(globals()[args.blk_input]) as fh:
-        # chart: BLK.Chart = make_chart(fh)
+    with io.StringIO(getattr(blk_input, args.blk_str)) as fh:
         chart: BLK.Chart = make_chart(fh)
-    import pprint
 
-    pprint.pprint(chart)
-    # exit(0)
     svg: ET.Element = build_xml_tree(chart)
     tree = ET.ElementTree(svg)
-    # filename: str = "run_blocks.svg"
-    filename: str = "message_box.svg"
-    with open(filename, "w", encoding="utf-8") as f:
+    with open(f"{args.blk_str}.svg", "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n')
         f.write('<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"\n')
-        # fmt: off
-        f.write(
-            '    "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">\n'
-        )
-        # fmt: on
+        f.write('    "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">\n')
         tree.write(f, encoding="unicode")
