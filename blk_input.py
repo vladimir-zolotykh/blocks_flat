@@ -18,7 +18,12 @@ minion_blk_experimental = """\
 [Minion #1] [] [Minion #2]
 """
 
-message_box_blk = """
+message_simple = """\
+[#00CCDE: MessageBox Window
+]
+"""
+
+message_box_blk = """\
 [#00CCDE: MessageBox Window
     [lightgray: Frame
         [] [white: Message text]

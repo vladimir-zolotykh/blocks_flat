@@ -59,6 +59,7 @@ parser.add_argument(
     choices=[n for n in dir(blk_input) if not n.startswith("__")],
     help="Select .blk input to parse",
 )
+parser.add_argument("--print-chart", type=bool, help="Print Chart tree", default=False)
 
 if __name__ == "__main__":
     argcomplete.autocomplete(parser)
@@ -67,6 +68,10 @@ if __name__ == "__main__":
     with io.StringIO(getattr(blk_input, args.blk_str)) as fh:
         chart: BLK.Chart = make_chart(fh)
 
+    if args.print_chart:
+        import pprint
+
+        pprint.pprint(chart)
     svg: ET.Element = build_xml_tree(chart)
     tree = ET.ElementTree(svg)
     with open(f"{args.blk_str}.svg", "w", encoding="utf-8") as f:
