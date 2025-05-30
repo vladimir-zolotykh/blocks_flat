@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 from __future__ import annotations
-from typing import Any
 from dataclasses import dataclass, field
 import re
 import pprint
