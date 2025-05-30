@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
+from __future__ import annotations
+from dataclasses import dataclass, field
 import re
+import pprint
 
 text = """
 Item: Root
@@ -30,20 +33,33 @@ block_pattern = re.compile(
 )
 
 
-def parse_item(text, depth=0):
-    matches = list(block_pattern.finditer(text))
-    results = []
-    for match in matches:
-        name_match = item_pattern.search(match.group("item"))
-        name = name_match.group("name") if name_match else "<Unknown>"
-        children_text = match.group("children")
-        children = parse_item(children_text, depth + 1) if children_text else []
-        results.append({"name": name, "children": children})
+@dataclass
+class Item:
+    name: str
+    children: list[Item] = field(default_factory=list)
+
+
+def parse_children(text: str) -> list[Item]:
+    results: list[Item] = []
+    if text:
+        for match in block_pattern.finditer(text):
+            item: Item = parse_item(match.group("item"))
+            results.append(item)
     return results
+
+
+def parse_item(text: str) -> Item | None:
+    item: Item | None
+    children: list[Item] = []
+    if text:
+        block: re.Match = block_pattern.match(text)
+        if block:
+            children = parse_children(block.group("children"))
+        item_match = item_pattern.match(block.group("item"))
+        item: Item = Item(name=item_match.group("name"), children=children)
+    return item
 
 
 if __name__ == "__main__":
     tree = parse_item(text)
-    import pprint
-
     pprint.pprint(tree, width=100)
